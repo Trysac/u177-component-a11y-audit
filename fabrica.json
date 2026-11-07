@@ -1,0 +1,1 @@
+{"lang": "typescript", "package": "@trysac/component-a11y-audit", "commands": {"install": [["npm", "install", "--no-audit", "--no-fund"]], "check": [["npm", "run", "check"]]}}
