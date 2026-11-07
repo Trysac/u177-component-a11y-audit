@@ -1,28 +1,19 @@
 # Testing
 
 ## Tools
+- [Vitest](https://vitest.dev/) runs the suites.
+- Coverage collected with `@vitest/coverage-v8`.
 
-- [Vitest](https://vitest.dev/) runs the suites in `test/`.
-- Coverage is collected with V8 (`@vitest/coverage-v8`) over `src/`.
+## Coverage
+- `test/index.test.ts`: This file contains all test cases.
 
-## Commands
-
-```sh
-npm test            # vitest run --coverage
-npx vitest          # watch mode while developing
-npm run check       # every gate, including tests
-```
-
-## Rules
-
-- Coverage must stay at or above 80 % for lines, branches, functions and statements (`vitest.config.ts`).
-  Lowering the thresholds is not allowed.
-- Test through the public entry point (`src/index.ts`) and assert observable behavior: return values,
-  thrown errors and their messages.
-- Each bug fix adds a test that fails without the fix.
-- Tests are deterministic: no network, no real clock or randomness without injection, no shared state between
-  tests. Temporary files go to the OS temp directory and are removed by the test.
-
-## Reports
-
-Coverage reports are written to `coverage/` (text summary and `lcov`). The folder is ignored by git.
+## Coverage Scope
+- `image-alt` (WCAG 1.1.1) verification, including decorative empty alt handling.
+- `button-name` (WCAG 4.1.2) resolution via text, `aria-label`, `img alt`, and `title`.
+- Form label association (via `for` attribute and wrapping `label` elements) and link name verification.
+- `duplicate-id` detection and `aria-valid-attr` (checking for typos in ARIA attributes).
+- `tabindex` positive value detection and `heading-order` logic (hierarchy jumps).
+- `aria-hidden-focus` protection (ensures elements inside aria-hidden are not focusable).
+- Input bounds enforcement (too large strings) and nesting depth limits (TOO_DEEP).
+- `accname` resolution tests including complex nested elements.
+- CLI runner integration: verifies correct exit codes (0, 1, 2) and output for various file inputs and formats.
