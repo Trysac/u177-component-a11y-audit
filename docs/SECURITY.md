@@ -1,28 +1,14 @@
-# Security practices
+# Security Model
 
-How this repository keeps the package and its users safe. The disclosure policy is in
-[../SECURITY.md](../SECURITY.md).
+## Threat Model
 
-## Secrets
+The utility parses potentially untrusted HTML. It is designed to be safe against DoS via extreme inputs.
 
-- No secrets, tokens or credentials in the repository, commit history, logs or prompts.
-- `gitleaks` runs as the last step of `npm run check` and as a dedicated CI job. Its configuration is
-  `.gitleaks.toml`.
-- Publishing credentials live only in the CI secret store or the maintainer's local npm configuration.
+### Defended
+- **Huge Inputs**: Processing is bounded to a default of 1,000,000 UTF-16 code units. Requests exceeding this threshold raise `A11yAuditError` with code `INPUT_TOO_LARGE`.
+- **Deep Nesting**: The parser enforces a maximum nesting depth of 256. Exceeding this raises `A11yAuditError` with code `TOO_DEEP`.
+- **Infinite Recursion**: `accname` calculation for `aria-labelledby` uses a `visited` Set to prevent cyclic reference recursion.
 
-## Dependencies
-
-- Runtime dependencies are avoided; development dependencies are limited to the toolchain listed in
-  [STACK.md](STACK.md).
-- Dependabot opens weekly updates for npm packages and GitHub Actions.
-- Commit the generated `package-lock.json` so installs are reproducible.
-
-## Code
-
-- No `eval`, dynamic `Function` construction or shelling out from library code.
-- Inputs from callers are validated and rejected with explicit errors.
-
-## Publishing
-
-- Packages are published from a clean checkout after `npm run check` passes.
-- Only `dist/` is included in the published tarball.
+### Not Defended
+- **Semantic Accuracy**: The tool evaluates HTML against specified rules. It does not perform validation of accessibility intent (e.g., whether an 'alt' text accurately describes the image) or valid application of ARIA roles outside the explicit `aria-valid-attr` rule.
+- **Complex JS Execution**: The utility is purely static; it does not execute scripts, load external resources, or render CSS.

@@ -1,55 +1,52 @@
-# component-a11y-audit
+# @trysac/component-a11y-audit
 
-[![npm version](https://img.shields.io/npm/v/@trysac/component-a11y-audit.svg)](https://www.npmjs.com/package/@trysac/component-a11y-audit)
-[![license: MIT](https://img.shields.io/npm/l/@trysac/component-a11y-audit.svg)](LICENSE)
 [![CI](https://github.com/Trysac/u177-component-a11y-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/Trysac/u177-component-a11y-audit/actions/workflows/ci.yml)
 
-Static accessibility audit of rendered component HTML with nine axe-style rules mapped to WCAG 2.2, a bounded tolerant tokenizer and text or JSON output
+Offline, zero-dependency static accessibility linter for rendered component HTML strings. Evaluates 9 rules mapped to WCAG 2.2 with a bounded, tolerant HTML tokenizer.
 
-## Problem
+## The Problem
+Component libraries often ship accessibility defects (e.g., missing labels, nameless buttons, or aria-hidden focus traps) because browser-based audits run late in the development lifecycle and require heavy headless browser environments in CI. Most of these defects are visible in the rendered HTML string a unit test already produces.
 
-Describe in two or three sentences the concrete problem this utility solves, who hits it, and why existing
-packages do not solve it well. Keep it factual; link to an issue or decision record when there is one.
+## Why not axe-core?
+`axe-core` requires a live DOM (browser/jsdom) and is resource-intensive for simple unit tests. This library audits HTML strings in isolation using a lightweight, synchronous, and bounded tokenizer that runs in any Node.js environment.
 
-## Install
+## Installation
 
-```sh
+```bash
 npm install @trysac/component-a11y-audit
 ```
 
-Requires Node.js 20 or newer. The package ships ES modules with TypeScript declarations.
+## Usage Example
 
-## Usage
+```typescript
+import { auditHtml } from '@trysac/component-a11y-audit';
 
-```ts
-import { greet } from "@trysac/component-a11y-audit";
-
-// Build a greeting; surrounding whitespace is ignored.
-const message = greet("  Ada ");
-console.log(message); // "Hello, Ada!"
-
-try {
-  greet("   ");
-} catch (error) {
-  console.error((error as Error).message); // "name must not be empty"
-}
+// Finds missing alt attributes
+const { findings } = auditHtml('<img src="logo.png">');
+console.log(findings[0].message); // "Image element is missing an alt attribute."
 ```
 
-## API
+## Public API
 
-| Export | Signature | Description |
-|---|---|---|
-| `greet` | `(name: string) => string` | Placeholder API; replace it with the real one. |
+- `auditHtml(html: string, options?: AuditOptions): AuditResult`
+- `formatFindings(result: AuditResult, format: 'text' | 'json'): string`
+- `run(argv: string[], io: CliIo): Promise<number>`
 
-## Development
+### Options
+- `rules`: Optional `RuleId[]` (defaults to all).
+- `maxLength`: Limit for input length (default: `1_000_000`).
+- `maxDepth`: Limit for nesting depth (default: `256`).
 
-```sh
-npm install
-npm run check   # lint, format, types, tests with coverage, docs, secrets
-```
+### Rules
+- `image-alt` (WCAG 1.1.1)
+- `button-name` (WCAG 4.1.2)
+- `link-name` (WCAG 2.4.4)
+- `label` (WCAG 4.1.2)
+- `aria-valid-attr` (WCAG 4.1.2)
+- `aria-hidden-focus` (WCAG 4.1.2)
+- `duplicate-id` (Best practice)
+- `tabindex` (Best practice)
+- `heading-order` (Best practice)
 
-See [AGENTS.md](AGENTS.md) for the full command list and [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow.
-
-## License
-
-[MIT](LICENSE) © 2026 Miguel Gomez
+## Security
+See [docs/SECURITY.md](docs/SECURITY.md) for limits on input size and nesting depth.
