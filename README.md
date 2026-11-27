@@ -12,9 +12,15 @@ Component libraries often ship accessibility defects (e.g., missing labels, name
 
 ## Installation
 
-```bash
-npm install @trysac/component-a11y-audit
+Not published to npm yet. Build it from a clone, then install it from the local path:
+
+```sh
+git clone https://github.com/Trysac/u177-component-a11y-audit.git
+cd u177-component-a11y-audit && npm ci && npm run build
+cd ../your-project && npm install ../u177-component-a11y-audit
 ```
+
+Imports keep the package name: `import { ... } from "@trysac/component-a11y-audit"`.
 
 ## Usage Example
 
